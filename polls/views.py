@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from django.views import generic
+from django.utils import timezone
 
 from polls.models import Poll, Choice
 
@@ -45,28 +46,35 @@ def vote(request, poll_id):
 # ===================================
 
 class IndexView(generic.ListView):
-	# By default, the ListView generic view uses a default template 
-	# called <app name>/<model name>_list.html
-	template_name = 'polls/index.html'
-	# for ListView, the automatically generated context variable is poll_list. 
-	# To override this we provide the context_object_name attribute
-	context_object_name = 'latest_poll_list'
-	def get_queryset(self):
-		return Poll.objects.order_by('-pub_date')[:5]
+    # By default, the ListView generic view uses a default template 
+    # called <app name>/<model name>_list.html
+    template_name = 'polls/index.html'
+    # for ListView, the automatically generated context variable is poll_list. 
+    # To override this we provide the context_object_name attribute
+    context_object_name = 'latest_poll_list'
+    def get_queryset(self):
+    	return Poll.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')[:5]
+
 
 class DetailView(generic.DetailView):
-	# since we are using a Django model (Poll), 
-	# Django is able to determine an appropriate name for the context variable
-	model = Poll
-	# By default, the DetailView generic view uses a template called 
-	# <app name>/<model name>_detail.html. So we override this by
-	template_name = 'polls/detail.html' 
+    # since we are using a Django model (Poll), 
+    # Django is able to determine an appropriate name for the context variable
+    model = Poll
+    # By default, the DetailView generic view uses a template called 
+    # <app name>/<model name>_detail.html. So we override this by
+    template_name = 'polls/detail.html'
+
+    def get_queryset(self):
+        """
+        Excludes any polls that aren't published yet.
+        """
+        return Poll.objects.filter(pub_date__lte=timezone.now())
 
 
 
 class ResultsView(generic.DetailView):
-	# since we are using a Django model (Poll), 
-	# Django is able to determine an appropriate name for the context variable
-	model = Poll
-	template_name = 'polls/results.html'
+    # since we are using a Django model (Poll), 
+    # Django is able to determine an appropriate name for the context variable
+    model = Poll
+    template_name = 'polls/results.html'
 
