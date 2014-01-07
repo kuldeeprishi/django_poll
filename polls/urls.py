@@ -4,7 +4,7 @@ from polls import views
 
 urlpatterns = patterns('',
 	# ex: /polls/
-	url(r'^$', views.IndexView.as_view(), name='index'),
+	url(r'^$', views.index, name='index'),
 	
 	# ex: /polls/5/
 	# the 'name' value as called by the {% url %} template tag
@@ -17,4 +17,7 @@ urlpatterns = patterns('',
 	
 	# ex: /polls/5/vote/
 	url(r'^(?P<poll_id>\d+)/vote/$', views.vote, name='vote'),
+
+	# ex: /polls/username/
+	url(r'^(?P<username>\w+)/$', views.generatepdf, name='generatepdf'),
 )
